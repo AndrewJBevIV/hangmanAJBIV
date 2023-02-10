@@ -1,13 +1,14 @@
 package sample;
 
+
 import javafx.application.Application;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -17,9 +18,11 @@ import javafx.stage.Stage;
 
 import java.util.Locale;
 
-public class Main extends Application {
+public class HelloApplication extends Application {
     private String wordToGuess = "Washington";
-    private int numberOfGuesses = 0;
+    private SimpleIntegerProperty numberOfStrikes = new SimpleIntegerProperty(this, "numberOfStrikes", -1){
+        public String toString() {return String.valueOf(Math.max(get(), 0));}
+    };
     private Label guessedWordLabel = new Label();
     private Label numberOfGuessesLabel = new Label();
     private TextField guessTextBox = new TextField();
@@ -28,7 +31,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         guessedWordLabel.setText(hideWord(wordToGuess));
-        numberOfGuessesLabel.setText("Number of strikes: " + numberOfGuesses);
+        numberOfGuessesLabel.setText("Number of strikes: " + numberOfStrikes.toString());
         //stickmanImage.setImage(new Image("/images/stickman0.png"));
         Button guessButton = new Button("Guess");
         guessButton.setOnAction(e -> {
@@ -36,8 +39,8 @@ public class Main extends Application {
             if (wordToGuess.toLowerCase(Locale.ROOT).contains(guessedLetter.toLowerCase(Locale.ROOT))) {
                 guessedWordLabel.setText(showLetter(guessedLetter, wordToGuess, guessedWordLabel.getText()));
             } else {
-                numberOfGuesses++;
-                numberOfGuessesLabel.setText("Number of strikes: " + numberOfGuesses);
+                numberOfStrikes.set(numberOfStrikes.get() + 1);
+                numberOfGuessesLabel.setText("Number of strikes: " + numberOfStrikes.get());
                 //stickmanImage.setImage(new Image("/images/stickman" + numberOfGuesses + ".png"));
             }
         });
@@ -45,34 +48,43 @@ public class Main extends Application {
         HBox guessBox = new HBox(10, new Label("Guess a letter: "), guessTextBox, guessButton);
         guessBox.setPadding(new Insets(10));
 
-        VBox root = new VBox(10, drawStickMan(),guessedWordLabel, numberOfGuessesLabel, guessBox);
+        Group stickMan = drawStickMan(150,100,30);
+        VBox root = new VBox(10, stickMan,guessedWordLabel, numberOfGuessesLabel, guessBox);
+        numberOfStrikes.addListener(observable -> {
+            for (int i=0; i<stickMan.getChildren().size(); i++) {
+                stickMan.getChildren().get(i).setVisible(i<numberOfStrikes.get());
+            }
+        });
+        numberOfStrikes.set(0);
         root.setPadding(new Insets(10));
 
-        primaryStage.setScene(new Scene(root));
-        primaryStage.setTitle("Hangman");
+        Scene scene = new Scene(root);
+        root.prefHeightProperty().bind(scene.heightProperty());
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Hangman"); 1
         primaryStage.show();
     }
 
-    private Group drawStickMan() {
+    private Group drawStickMan(double x0, double y0, double l0) {
         Group root = new Group();
 
         // Head
-        Circle head = new Circle(150, 100, 50);
+        Circle head = new Circle(x0, y0, l0);
         root.getChildren().add(head);
 
         // Body
-        Line body = new Line(150, 150, 150, 250);
+        Line body = new Line(x0, y0+l0, x0, y0+3*l0);
         root.getChildren().add(body);
 
         // Arms
-        Line arm1 = new Line(150, 175, 100, 200);
-        Line arm2 = new Line(150, 175, 200, 200);
+        Line arm1 = new Line(x0, y0+3/2*l0, x0-l0, y0+2*l0);
+        Line arm2 = new Line(x0, y0+3/2*l0, x0+l0, y0+2*l0);
         root.getChildren().add(arm1);
         root.getChildren().add(arm2);
 
         // Legs
-        Line leg1 = new Line(150, 250, 100, 300);
-        Line leg2 = new Line(150, 250, 200, 300);
+        Line leg1 = new Line(x0, y0+3*l0, x0-l0, y0+4*l0);
+        Line leg2 = new Line(x0, y0+3*l0, x0+l0, y0+4*l0);
         root.getChildren().add(leg1);
         root.getChildren().add(leg2);
 
