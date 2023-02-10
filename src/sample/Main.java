@@ -1,9 +1,8 @@
 package sample;
 
-
-
 import javafx.application.Application;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -35,7 +34,7 @@ public class Main extends Application {
         numberOfGuessesLabel.setText("Number of strikes: " + numberOfStrikes.toString());
         //stickmanImage.setImage(new Image("/images/stickman0.png"));
         Button guessButton = new Button("Guess");
-        guessButton.setOnAction(e -> {
+        EventHandler guess = e -> {
             String guessedLetter = guessTextBox.getText(); // replace this with input from user
             if (wordToGuess.toLowerCase(Locale.ROOT).contains(guessedLetter.toLowerCase(Locale.ROOT))) {
                 guessedWordLabel.setText(showLetter(guessedLetter, wordToGuess, guessedWordLabel.getText()));
@@ -44,7 +43,9 @@ public class Main extends Application {
                 numberOfGuessesLabel.setText("Number of strikes: " + numberOfStrikes.get());
                 //stickmanImage.setImage(new Image("/images/stickman" + numberOfGuesses + ".png"));
             }
-        });
+        };
+        guessButton.setOnAction(guess);
+        guessTextBox.setOnAction(guess);
 
         HBox guessBox = new HBox(10, new Label("Guess a letter: "), guessTextBox, guessButton);
         guessBox.setPadding(new Insets(10));
