@@ -1,6 +1,7 @@
 package sample;
 
 
+
 import javafx.application.Application;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Insets;
@@ -18,7 +19,7 @@ import javafx.stage.Stage;
 
 import java.util.Locale;
 
-public class HelloApplication extends Application {
+public class Main extends Application {
     private String wordToGuess = "Washington";
     private SimpleIntegerProperty numberOfStrikes = new SimpleIntegerProperty(this, "numberOfStrikes", -1){
         public String toString() {return String.valueOf(Math.max(get(), 0));}
@@ -53,6 +54,7 @@ public class HelloApplication extends Application {
         numberOfStrikes.addListener(observable -> {
             for (int i=0; i<stickMan.getChildren().size(); i++) {
                 stickMan.getChildren().get(i).setVisible(i<numberOfStrikes.get());
+                primaryStage.setHeight(primaryStage.getHeight()+10.0);
             }
         });
         numberOfStrikes.set(0);
@@ -61,7 +63,7 @@ public class HelloApplication extends Application {
         Scene scene = new Scene(root);
         root.prefHeightProperty().bind(scene.heightProperty());
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Hangman"); 1
+        primaryStage.setTitle("Hangman");
         primaryStage.show();
     }
 
