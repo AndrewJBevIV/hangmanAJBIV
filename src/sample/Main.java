@@ -40,8 +40,6 @@ public class HelloApplication extends Application {
                 guessedWordLabel.setText(showLetter(guessedLetter, wordToGuess, guessedWordLabel.getText()));
             } else {
                 numberOfStrikes.set(numberOfStrikes.get() + 1);
-                numberOfGuessesLabel.setText("Number of strikes: " + numberOfStrikes.get());
-                //stickmanImage.setImage(new Image("/images/stickman" + numberOfGuesses + ".png"));
             }
         };
         guessButton.setOnAction(guess);
@@ -67,6 +65,7 @@ public class HelloApplication extends Application {
                                 80.0
                 );
             }
+            numberOfGuessesLabel.setText("Number of strikes: " + numberOfStrikes.get());
         });
         numberOfStrikes.set(0);
         resetButton.setOnAction(actionEvent -> numberOfStrikes.set(0));
