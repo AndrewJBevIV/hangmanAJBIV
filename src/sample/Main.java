@@ -18,7 +18,7 @@ import javafx.stage.Stage;
 
 import java.util.Locale;
 
-public class Main extends Application {
+public class HelloApplication extends Application {
     private String wordToGuess = "Washington";
     private SimpleIntegerProperty numberOfStrikes = new SimpleIntegerProperty(this, "numberOfStrikes", -1){
         public String toString() {return String.valueOf(Math.max(get(), 0));}
@@ -51,14 +51,25 @@ public class Main extends Application {
         guessBox.setPadding(new Insets(10));
 
         Group stickMan = drawStickMan(150,100,30);
-        VBox root = new VBox(10, stickMan,guessedWordLabel, numberOfGuessesLabel, guessBox);
+        Button resetButton = new Button("Reset");
+        VBox root = new VBox(10, stickMan,guessedWordLabel, numberOfGuessesLabel, guessBox, resetButton);
         numberOfStrikes.addListener(observable -> {
             for (int i=0; i<stickMan.getChildren().size(); i++) {
                 stickMan.getChildren().get(i).setVisible(i<numberOfStrikes.get());
-                primaryStage.setHeight(primaryStage.getHeight()+10.0);
+                primaryStage.setHeight(
+                        (Math.max(stickMan.prefHeight(0.0), 110.0))+
+                                guessedWordLabel.getHeight()+
+                                numberOfGuessesLabel.getHeight()+
+                                guessBox.getHeight()+
+                                resetButton.getHeight()+
+                                root.getPadding().getTop()+
+                                root.getPadding().getBottom()+
+                                80.0
+                );
             }
         });
         numberOfStrikes.set(0);
+        resetButton.setOnAction(actionEvent -> numberOfStrikes.set(0));
         root.setPadding(new Insets(10));
 
         Scene scene = new Scene(root);
